@@ -7,7 +7,7 @@ const getStudent = async (req, res) => {
 
     try {
         const students = await Student.find({});
-        res.send({ student: students })
+        res.send({ students: students })
     } catch (error) {
         res.send({ message: 'Error Occured' })
     }
