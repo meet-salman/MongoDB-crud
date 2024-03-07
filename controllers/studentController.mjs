@@ -3,6 +3,7 @@ import Student from "../models/StudentModel.mjs";
 import mongoose from "mongoose";
 const router = express.Router();
 
+
 //  GET: localhost:3000/students
 router.get('/', async (req, res) => {
 
@@ -35,7 +36,7 @@ router.put('/:id', async (req, res) => {
     const student = await Student.findOneAndUpdate({ _id: id }, { ...req.body });
 
 
-    // Checking the ID is Valid or Not
+    // Checking ID is Valid or Not
     if (!mongoose.Types.ObjectId.isValid(id))
         return res.status(400).send({ message: "Invalid Student ID!" });
 
@@ -49,6 +50,23 @@ router.put('/:id', async (req, res) => {
 });
 
 
+//  DELETE: localhost:3000/students/:id
+router.delete('/:id', async (req, res) => {
+
+    const { id } = req.params;
+    const student = await Student.findOneAndDelete({ _id: id });
+
+    // Checking  ID valid or not
+    if (!mongoose.Types.ObjectId.isValid(id))
+        return res.status(400).send({ message: "Invalid Student ID!" });
+
+    // Error if data not found 
+    if (!student)
+        return res.status(404).send({ message: "No Student Data Found!" });
+
+    // Data deleted
+    res.status(200).send({ message: "Student Data Deleted!" })
+})
 
 
 
