@@ -32,19 +32,16 @@ router.post('/newstudent', async (req, res) => {
 router.put('/:id', async (req, res) => {
 
     const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        res.status(400).send({ message: "Invalid Student ID!" })
-        return
-    }
-
     const student = await Student.findOneAndUpdate({ _id: id }, { ...req.body });
 
-    if (!student) {
-        res.status(404).send({ message: "No Student Data Found!" })
-        return
-    }
-    res.status(200).send({ mess: "Student Data Updated!" })
+
+    if (!mongoose.Types.ObjectId.isValid(id))
+        return res.status(400).send({ message: "Invalid Student ID!" });
+
+    if (!student)
+        return res.status(404).send({ message: "No Student Data Found!" });
+
+    res.status(200).send({ mess: "Student Data Updated!" });
 
 });
 
