@@ -12,19 +12,19 @@ router.get('/', async (req, res) => {
         res.send({ message: "Students Fetched Successfully!", students: students });
 
     } catch (error) {
-        res.send({ message: "Error Occured" });
+        res.send({ message: error.message });
     }
 });
 
 
 //  POST: localhost:3000/students/newstudent
-router.post('/newstudent', async (req, res) => {
+router.post('/register', async (req, res) => {
 
     try {
         const student = await Student.create(req.body);
-        res.send({ message: "Stdent Added Succesfully!", student: student });
+        res.status(200).send({ message: "Stdent Added Succesfully!", student: student });
     } catch (error) {
-        res.send({ message: "Error Occured" });
+        res.status(400).send({ message: error.message });
     }
 });
 

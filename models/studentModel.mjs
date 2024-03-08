@@ -2,22 +2,19 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const studentSchema = new Schema({
-    name: {
+    fullName: {
         type: String,
-        required: true
-    },
-    age: {
-        type: Number,
         required: true
     },
     email: {
         type: String,
+        required: [true, " Email is required!"],
+        unique: [true, "Email Already in Use!"]
+    },
+    password: {
+        type: String,
         required: true
     },
-    // profilePIC: {
-    //     type: String,
-    //     required: true
-    // },
 });
 
 const studentModel = mongoose.model('Student', studentSchema);
