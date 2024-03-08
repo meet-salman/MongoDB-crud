@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
+import bcrypt from 'bcryptjs';
 const { Schema } = mongoose;
+
 
 const studentSchema = new Schema({
     fullName: {
@@ -15,6 +17,17 @@ const studentSchema = new Schema({
         type: String,
         required: true
     },
+});
+
+
+// Password Bycryption
+studentSchema.pre('save', function (next) {
+
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(this.password, salt);
+
+    this.password = hash;
+    next();
 });
 
 const studentModel = mongoose.model('Student', studentSchema);

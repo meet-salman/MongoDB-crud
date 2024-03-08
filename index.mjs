@@ -13,7 +13,7 @@ app.use(express.json())
 // Database Connection
 mongoDB.connection
     .once('open', () => {
-        app.listen(3000);
+        app.listen(3001);
         console.log("Database Connected");
     })
     .on("error", (err) => {
