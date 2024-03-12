@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import bcrypt from 'bcryptjs';
 import Student from "../models/studentModel.js";
+import verifyToken from "../middlewares/verifyToken.js";
 const router = express.Router();
 
 
@@ -65,6 +66,14 @@ router.put('/login', async (req, res) => {
 });
 
 
+// Logout 
+//  PUT: localhost:3000/students/logout
+router.put('/logout', verifyToken, async (req, res) => {
+    await Student.findByIdAndUpdate(req.userId, { $pull: { tokens: req.tokenToRemove } })
+    res.send({ message: 'Logged out successfully!' })
+})
+
+
 // Edit
 //  PUT: localhost:3000/students/:id
 router.put('/:id', async (req, res) => {
@@ -122,6 +131,8 @@ router.delete('/:id', async (req, res) => {
     }
 
 })
+
+
 
 
 
