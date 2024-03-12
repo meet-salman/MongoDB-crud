@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { JWT_SECRET } from "../config/env.js";
 const { Schema } = mongoose;
 
 
@@ -18,8 +20,10 @@ const studentSchema = new Schema({
         unique: [true, "Email Already in Use!"]
     },
     contactNo: {
-        type: Number,
-        required: true
+        type: String,
+        length: 11,
+        required: [true, " Email is required!"],
+        unique: [true, "Email Already in Use!"]
     },
     course: {
         type: String,
@@ -36,14 +40,18 @@ const studentSchema = new Schema({
 });
 
 
-// Password Bycryption
+// Password Hashing
 studentSchema.pre('save', function (next) {
     const student = this;
 
-    const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(student.password, salt);
+    if (student.isModified('password')) {
 
-    student.password = hash;
+        const salt = bcrypt.genSaltSync(10);
+        const hash = bcrypt.hashSync(student.password, salt);
+
+        student.password = hash;
+    }
+
     next();
 });
 
@@ -53,6 +61,14 @@ studentSchema.methods.comparePassword = function (password) {
     const student = this;
 
     return bcrypt.compareSync(password, student.password);
+};
+
+// Generate Token
+studentSchema.methods.generateToken = function () {
+    const id = this._id;
+    const token = jwt.sign({ id }, JWT_SECRET);
+
+    return token;
 };
 
 

@@ -1,6 +1,7 @@
 import express from "express";
-import Student from "../models/studentModel.js";
 import mongoose from "mongoose";
+import bcrypt from 'bcryptjs';
+import Student from "../models/studentModel.js";
 const router = express.Router();
 
 
@@ -26,14 +27,14 @@ router.post('/register', async (req, res) => {
         const student = await Student.create(req.body);
         res.status(200).send({ message: "Stdent Added Succesfully!", student: student });
     } catch (error) {
-        res.status(400).send({ message: error.message });
+        return res.status(400).send({ message: error.message });
     }
 });
 
 
 // Login 
 //  PUT: localhost:3000/students/login
-router.get('/login', async (req, res) => {
+router.put('/login', async (req, res) => {
 
     try {
         const { email, password } = req.body;
@@ -41,18 +42,25 @@ router.get('/login', async (req, res) => {
 
         // Check Email Exist or Not
         if (!student)
-            return res.status(404).send({ message: 'Email not found!' })
+            return res.status(404).send({ message: 'Invalid Email!' })
 
 
+        // Password Compare
         const isCorrectPassword = student.comparePassword(password);
-
         if (!isCorrectPassword)
-            return res.status(400).send({ message: 'Password is incorrect!' })
+            return res.status(400).send({ message: 'Invalid Password!' })
 
 
+        // Generate Token
+        const token = student.generateToken();
+        student.tokens.push(token);
+        await student.save();
+
+
+        // Student Logged In
         res.status(200).send({ message: "Logged In Succesfully!", student: student });
     } catch (error) {
-        res.status(400).send({ message: error.message });
+        return res.status(400).send({ message: error.message });
     }
 });
 
@@ -62,19 +70,31 @@ router.get('/login', async (req, res) => {
 router.put('/:id', async (req, res) => {
 
     const { id } = req.params;
-    const student = await Student.findOneAndUpdate({ _id: id }, { ...req.body });
-
 
     // Checking ID is Valid or Not
     if (!mongoose.Types.ObjectId.isValid(id))
         return res.status(400).send({ message: "Invalid Student ID!" });
 
-    // Error if data not found 
-    if (!student)
-        return res.status(404).send({ message: "No Student Data Found!" });
+    // Password Hashing if edited
+    if ('password' in req.body) {
+        const salt = bcrypt.genSaltSync(10);
+        const hash = bcrypt.hashSync(req.body.password, salt);
+        req.body.password = hash;
+    }
 
-    // Data updated
-    res.status(200).send({ mess: "Student Data Updated!" });
+    try {
+        const student = await Student.findOneAndUpdate({ _id: id }, { ...req.body });
+
+        // Error if data not found 
+        if (!student)
+            return res.status(404).send({ message: "No Student Data Found!" });
+
+        // Data updated
+        res.status(200).send({ mess: "Student Data Updated!" });
+    } catch (error) {
+        return res.status(500).send({ message: error.message });
+    }
+
 
 });
 
