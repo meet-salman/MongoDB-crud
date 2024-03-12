@@ -1,9 +1,10 @@
 import express from "express";
-import Student from "../models/StudentModel.mjs";
+import Student from "../models/studentModel.js";
 import mongoose from "mongoose";
 const router = express.Router();
 
 
+// Fetch All Data
 //  GET: localhost:3000/students
 router.get('/', async (req, res) => {
 
@@ -17,7 +18,8 @@ router.get('/', async (req, res) => {
 });
 
 
-//  POST: localhost:3000/students/newstudent
+// Register
+//  POST: localhost:3000/students/register
 router.post('/register', async (req, res) => {
 
     try {
@@ -29,6 +31,33 @@ router.post('/register', async (req, res) => {
 });
 
 
+// Login 
+//  PUT: localhost:3000/students/login
+router.get('/login', async (req, res) => {
+
+    try {
+        const { email, password } = req.body;
+        const student = await Student.findOne({ email });
+
+        // Check Email Exist or Not
+        if (!student)
+            return res.status(404).send({ message: 'Email not found!' })
+
+
+        const isCorrectPassword = student.comparePassword(password);
+
+        if (!isCorrectPassword)
+            return res.status(400).send({ message: 'Password is incorrect!' })
+
+
+        res.status(200).send({ message: "Logged In Succesfully!", student: student });
+    } catch (error) {
+        res.status(400).send({ message: error.message });
+    }
+});
+
+
+// Edit
 //  PUT: localhost:3000/students/:id
 router.put('/:id', async (req, res) => {
 
@@ -50,6 +79,7 @@ router.put('/:id', async (req, res) => {
 });
 
 
+// Delete
 //  DELETE: localhost:3000/students/:id
 router.delete('/:id', async (req, res) => {
 

@@ -1,7 +1,8 @@
-import express, { Router } from "express";
+import express from "express";
 import cors from 'cors';
-import mongoDB from './config/mongoDB.mjs';
-import router from './routes/router.mjs'
+import { PORT } from "./config/env.js";
+import mongoDB from './config/mongoDB.js'
+import router from './routes/router.js'
 const app = express();
 
 
@@ -13,7 +14,7 @@ app.use(express.json())
 // Database Connection
 mongoDB.connection
     .once('open', () => {
-        app.listen(3001);
+        app.listen(PORT);
         console.log("Database Connected");
     })
     .on("error", (err) => {
