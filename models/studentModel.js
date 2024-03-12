@@ -63,6 +63,7 @@ studentSchema.methods.comparePassword = function (password) {
     return bcrypt.compareSync(password, student.password);
 };
 
+
 // Generate Token
 studentSchema.methods.generateToken = function () {
     const id = this._id;
