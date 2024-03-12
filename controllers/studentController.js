@@ -110,12 +110,17 @@ router.delete('/:id', async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(id))
         return res.status(400).send({ message: "Invalid Student ID!" });
 
-    // Error if data not found 
-    if (!student)
-        return res.status(404).send({ message: "No Student Data Found!" });
+    try {
+        // Error if data not found 
+        if (!student)
+            return res.status(404).send({ message: "No Student Data Found!" });
 
-    // Data deleted
-    res.status(200).send({ message: "Student Data Deleted!" })
+        // Data deleted
+        return res.status(200).send({ message: "Student Data Deleted!" })
+    } catch (error) {
+        return res.status(500).send({ message: error.message });
+    }
+
 })
 
 
