@@ -6,16 +6,16 @@ import verifyToken from "../middlewares/verifyToken.js";
 const router = express.Router();
 
 
-// Fetch All Data
+// Fetch All Students Data
 //  GET: localhost:3000/students
 router.get('/', async (req, res) => {
 
     try {
         const students = await Student.find();
-        res.send({ message: "Students Fetched Successfully!", students: students });
+        res.status(200).send({ message: "Students Fetched Successfully!", students: students });
 
     } catch (error) {
-        res.send({ message: error.message });
+        res.status(404).send({ message: 'No Students Found!' });
     }
 });
 
@@ -92,16 +92,16 @@ router.put('/:id', async (req, res) => {
     }
 
     try {
-        const student = await Student.findOneAndUpdate({ _id: id }, { ...req.body });
+        const student = await Student.findByIdAndUpdate(id, { ...req.body });
 
         // Error if data not found 
         if (!student)
             return res.status(404).send({ message: "No Student Data Found!" });
 
         // Data updated
-        res.status(200).send({ mess: "Student Data Updated!" });
+        return res.status(200).send({ message: "Student Data Updated!" });
     } catch (error) {
-        return res.status(500).send({ message: error.message });
+        res.status(500).send({ message: error.message });
     }
 
 
@@ -113,7 +113,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
 
     const { id } = req.params;
-    const student = await Student.findOneAndDelete({ _id: id });
+    const student = await Student.findByIdAndDelete(id);
 
     // Checking  ID valid or not
     if (!mongoose.Types.ObjectId.isValid(id))
@@ -127,7 +127,7 @@ router.delete('/:id', async (req, res) => {
         // Data deleted
         return res.status(200).send({ message: "Student Data Deleted!" })
     } catch (error) {
-        return res.status(500).send({ message: error.message });
+        res.status(500).send({ message: error.message });
     }
 
 })
