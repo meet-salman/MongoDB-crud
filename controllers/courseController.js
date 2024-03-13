@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import Course from '../models/courseModel.js'
+import verifyToken from "../middlewares/verifyToken.js";
 const router = express.Router();
 
 
@@ -19,7 +20,7 @@ router.get('/', async (req, res) => {
 
 // Add Course
 //  POST: localhost:3000/courses/add
-router.post('/add', async (req, res) => {
+router.post('/add', verifyToken, async (req, res) => {
     try {
         const course = await Course.create(req.body);
         res.status(200).send({ message: 'Course Added Successfully!', course: course });
@@ -32,7 +33,7 @@ router.post('/add', async (req, res) => {
 
 // Edit
 //  PUT: localhost:3000/courses/:id
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -56,7 +57,7 @@ router.put('/:id', async (req, res) => {
 
 // Delete
 //  PUT: localhost:3000/courses/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
