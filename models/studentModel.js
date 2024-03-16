@@ -29,6 +29,14 @@ const studentSchema = new Schema({
         type: String,
         required: true
     },
+    enrollDate: {
+        type: String,
+        required: true
+    },
+    type: {
+        type: String,
+        default: 'student',
+    },
     password: {
         type: String,
         required: true

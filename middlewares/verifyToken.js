@@ -15,7 +15,7 @@ async function verifyToken(req, res, next) {
         const tokenExist = await Student.findOne({ tokens: token });
 
         if (!tokenExist)
-            return res.status(401).send({ message: "Invalid token!" });
+            return res.status(401).send({ message: "Session Expired!" });
 
         req.userId = decoded.id;
         req.tokenToRemove = token;

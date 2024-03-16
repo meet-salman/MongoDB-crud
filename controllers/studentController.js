@@ -8,7 +8,7 @@ const router = express.Router();
 
 // Fetch All Students Data
 //  GET: localhost:3000/students
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
 
     try {
         const students = await Student.find();
@@ -25,8 +25,16 @@ router.get('/', async (req, res) => {
 router.post('/register', async (req, res) => {
 
     try {
+
+        const { email } = req.body;
+        const isExist = await Student.findOne({ email });
+
+        if (isExist)
+            return res.status(400).send({ message: 'Email is already exist!' });
+
         const student = await Student.create(req.body);
-        res.status(200).send({ message: "Stdent Added Succesfully!", student: student });
+        res.status(200).send({ message: "SignUp Succesfully!", student: student });
+
     } catch (error) {
         return res.status(400).send({ message: error.message });
     }
@@ -76,7 +84,7 @@ router.put('/logout', verifyToken, async (req, res) => {
 
 // Edit
 //  PUT: localhost:3000/students/:id
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyToken, async (req, res) => {
 
     const { id } = req.params;
 
@@ -110,7 +118,7 @@ router.put('/:id', async (req, res) => {
 
 // Delete
 //  DELETE: localhost:3000/students/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, async (req, res) => {
 
     const { id } = req.params;
     const student = await Student.findByIdAndDelete(id);
